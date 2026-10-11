@@ -6,104 +6,25 @@
 <title>VarzXPaste</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    background: #000;
-    min-height: 100vh;
-  }
-  body {
-    color: #00ff88;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  .header {
-    position: sticky;
-    top: 0;
-    background: #000;
-    border-bottom: 1px solid #1a1a1a;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85em;
-    z-index: 10;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  html, body { background: #000; min-height: 100vh; }
+  body { color: #00ff88; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+  .header { position: sticky; top: 0; background: #000; border-bottom: 1px solid #1a1a1a; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; z-index: 10; flex-wrap: wrap; gap: 8px; }
   .header .left { display: flex; align-items: center; gap: 12px; }
   .header .slug { color: #00ff88; font-weight: bold; }
   .header .meta { color: #333; font-size: 0.9em; }
   .header .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .header button {
-    background: #0a0a0a;
-    border: 1px solid #1a1a1a;
-    color: #00ff88;
-    padding: 6px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.85em;
-    transition: all 0.2s;
-  }
+  .header button { background: #0a0a0a; border: 1px solid #1a1a1a; color: #00ff88; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85em; transition: all 0.2s; }
   .header button:hover { background: #00ff88; color: #000; border-color: #00ff88; }
-  .terminal {
-    padding: 20px;
-    white-space: pre-wrap;
-    word-break: break-word;
-    color: #00ff88;
-    font-size: 0.9em;
-    counter-reset: line;
-    padding-bottom: 60px;
-  }
+  .terminal { padding: 20px; white-space: pre-wrap; word-break: break-word; color: #00ff88; font-size: 0.9em; counter-reset: line; padding-bottom: 60px; }
   .line { display: block; position: relative; padding-left: 55px; }
-  .line::before {
-    content: counter(line);
-    counter-increment: line;
-    position: absolute;
-    left: 0;
-    width: 45px;
-    text-align: right;
-    color: #333;
-    user-select: none;
-  }
-  .welcome {
-    padding: 40px 20px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    flex-direction: column;
-  }
+  .line::before { content: counter(line); counter-increment: line; position: absolute; left: 0; width: 45px; text-align: right; color: #333; user-select: none; }
+  .welcome { padding: 40px 20px; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; }
   .welcome .prompt { color: #00ff88; }
   .welcome .dim { color: #333; }
   .welcome .red { color: #ff3366; }
-  .blink {
-    display: inline-block;
-    width: 10px;
-    height: 18px;
-    background: #00ff88;
-    animation: blink 1s steps(2) infinite;
-    vertical-align: middle;
-    margin-left: 4px;
-  }
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-  .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #000;
-    border-top: 1px solid #1a1a1a;
-    padding: 8px 20px;
-    font-size: 0.8em;
-    color: #333;
-    display: flex;
-    justify-content: space-between;
-  }
+  .blink { display: inline-block; width: 10px; height: 18px; background: #00ff88; animation: blink 1s steps(2) infinite; vertical-align: middle; margin-left: 4px; }
+  @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+  .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 1px solid #1a1a1a; padding: 8px 20px; font-size: 0.8em; color: #333; display: flex; justify-content: space-between; }
   .footer .status { color: #00ff88; }
   .footer .status.err { color: #ff3366; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -129,14 +50,10 @@
   </div>
 </div>
 
-<!-- ===== FIREBASE SDK ===== -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-// ============================================
-// FIREBASE CONFIG (sama kayak VarzXHubWeb)
-// ============================================
 const firebaseConfig = {
   apiKey: "AIzaSyDp_3SDiQUAGX0_gw8BYtO2Ecnypl1GlgE",
   authDomain: "project1-f57d6.firebaseapp.com",
@@ -150,26 +67,16 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ============================================
-// PARSE SLUG DARI URL PATH
-// Format: https://varzxpaste.vercel.app/abc123
-// ============================================
 function getSlug() {
-  const path = window.location.pathname.replace(/^\/+|\/+$/g, ""); // buang / di depan & belakang
-  if (!path || path === "index.html") return null;
-  return path.split("/")[0]; // ambil segmen pertama aja
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+  if (!path || path === "index.html" || path.startsWith("raw/")) return null;
+  return path.split("/")[0];
 }
 
 function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// ============================================
-// RENDER
-// ============================================
 function render() {
   const app = document.getElementById("app");
   const slug = getSlug();
@@ -186,14 +93,12 @@ function render() {
         <div>  <span class="dim">─────────────────────────────</span></div>
         <div>  USAGE:</div>
         <div>    <span class="dim">View :</span> /&lt;slug&gt;</div>
+        <div>    <span class="dim">Raw  :</span> /raw/&lt;slug&gt;</div>
         <div>  <span class="dim">─────────────────────────────</span></div>
         <br>
         <div><span class="prompt">varzx@paste:~$</span> <span class="blink"></span></div>
       </div>
-      <div class="footer">
-        <span>VarzXPaste</span>
-        <span class="status">● ONLINE</span>
-      </div>
+      <div class="footer"><span>VarzXPaste</span><span class="status">● ONLINE</span></div>
     `;
     return;
   }
@@ -204,10 +109,7 @@ function render() {
       <br>
       <div><span class="prompt">varzx@paste:~$</span> <span class="blink"></span></div>
     </div>
-    <div class="footer">
-      <span>VarzXPaste</span>
-      <span class="status">● LOADING</span>
-    </div>
+    <div class="footer"><span>VarzXPaste</span><span class="status">● LOADING</span></div>
   `;
 
   db.ref("pastes/" + slug).once("value")
@@ -224,21 +126,17 @@ function render() {
             <br>
             <div><span class="prompt">varzx@paste:~$</span> <span class="blink"></span></div>
           </div>
-          <div class="footer">
-            <span>VarzXPaste</span>
-            <span class="status err">● NOT FOUND</span>
-          </div>
+          <div class="footer"><span>VarzXPaste</span><span class="status err">● NOT FOUND</span></div>
         `;
         return;
       }
 
-      // Update views
       db.ref("pastes/" + slug + "/views").transaction(v => (v || 0) + 1).catch(() => {});
 
       const content = data.code;
       const lines = content.split("\n").map(l => `<span class="line">${escapeHtml(l) || " "}</span>`).join("");
-      const viewUrl = window.location.href;
-      const loadstring = 'loadstring(game:HttpGet("' + viewUrl + '"))()';
+      const viewUrl = window.location.origin + "/" + slug;
+      const loadstring = 'loadstring(game:HttpGet("' + window.location.origin + "/raw/" + slug + '"))()';
 
       app.innerHTML = `
         <div class="header">
@@ -247,19 +145,16 @@ function render() {
             <span class="meta">${content.length} chars</span>
           </div>
           <div class="actions">
-            <button onclick="copyRaw()">Copy Raw</button>
+            <button onclick="copyRaw()">Copy Raw URL</button>
             <button onclick="copyLS()">Copy Loadstring</button>
           </div>
         </div>
         <div class="terminal">${lines}</div>
-        <div class="footer">
-          <span>VarzXPaste</span>
-          <span class="status">● ONLINE</span>
-        </div>
+        <div class="footer"><span>VarzXPaste</span><span class="status">● ONLINE</span></div>
       `;
 
       window.__varzx_loadstring = loadstring;
-      window.__varzx_rawurl = viewUrl;
+      window.__varzx_rawurl = window.location.origin + "/raw/" + slug;
     })
     .catch(e => {
       app.innerHTML = `
@@ -271,24 +166,17 @@ function render() {
           <br>
           <div><span class="prompt">varzx@paste:~$</span> <span class="blink"></span></div>
         </div>
-        <div class="footer">
-          <span>VarzXPaste</span>
-          <span class="status err">● OFFLINE</span>
-        </div>
+        <div class="footer"><span>VarzXPaste</span><span class="status err">● OFFLINE</span></div>
       `;
     });
 }
 
 function copyRaw() {
-  navigator.clipboard.writeText(window.__varzx_rawurl || window.location.href).then(() => {
-    flash("Copied Raw!");
-  });
+  navigator.clipboard.writeText(window.__varzx_rawurl || "").then(() => flash("Copied Raw URL!"));
 }
 
 function copyLS() {
-  navigator.clipboard.writeText(window.__varzx_loadstring || "").then(() => {
-    flash("Copied Loadstring!");
-  });
+  navigator.clipboard.writeText(window.__varzx_loadstring || "").then(() => flash("Copied Loadstring!"));
 }
 
 function flash(msg) {
@@ -307,4 +195,4 @@ function flash(msg) {
 window.addEventListener("load", render);
 </script>
 </body>
-  </html>
+</html>
